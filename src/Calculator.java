@@ -99,7 +99,13 @@ public class Calculator extends Application{
 			numberButtons.get(counter).setOnAction(new EventHandler<ActionEvent>(){
 				public void handle(ActionEvent e){
 					Button temp = (Button)e.getSource();
-					System.out.println(temp.getText());
+					String newEquationText = equationTextField.getText() + temp.getText();
+					Long test = Long.valueOf(newEquationText);
+					if(test < Integer.MAX_VALUE){
+						equationTextField.setText(equationTextField.getText()
+							+ temp.getText());
+						System.out.println(temp.getText());
+					}
 				}
 			});
 		}
