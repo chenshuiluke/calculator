@@ -45,8 +45,8 @@ public class Calculator extends Application{
 		VBox root = new VBox();
 		Scene scene = new Scene(root, windowWidth, windowHeight, Color.WHITE);
 
-		TextField equationTextField = new TextField();
-		equationTextField.setEditable(false);
+		TextField expressionTextField = new TextField();
+		expressionTextField.setEditable(false);
 
 		GridPane numberGrid = new GridPane();
 		numberGrid.setHgap(5);
@@ -104,23 +104,23 @@ public class Calculator extends Application{
 				}
 		}
 
-		//Makes clicking the number buttons add to the equationTextField
+		//Makes clicking the number buttons add to the expressionTextField
 		for(int counter = 0; counter < numberButtons.size(); counter++){
 			numberButtons.get(counter).setOnAction(new EventHandler<ActionEvent>(){
 				public void handle(ActionEvent e){
 					Button temp = (Button)e.getSource();
 					if(scriptExceptionOccurred){
-						equationTextField.setText("");
+						expressionTextField.setText("");
 						scriptExceptionOccurred = false;
 					}
-					String newEquationText = equationTextField.getText() + temp.getText();
+					String newexpressionText = expressionTextField.getText() + temp.getText();
 					/*
-					Long test = Long.valueOf(newEquationText);
+					Long test = Long.valueOf(newexpressionText);
 					if(test < Integer.MAX_VALUE){
 					}
 					*/
-					equationTextField.setText(newEquationText);
-					System.out.println(newEquationText);
+					expressionTextField.setText(newexpressionText);
+					System.out.println(newexpressionText);
 					if(operatorAlreadyPressed && !secondOperand){
 						secondOperand = true;
 					}
@@ -133,17 +133,17 @@ public class Calculator extends Application{
 				public void handle(ActionEvent e){
 					Button temp = (Button)e.getSource();
 					if(scriptExceptionOccurred){
-						equationTextField.setText("");
+						expressionTextField.setText("");
 						scriptExceptionOccurred = false;
 					}
-					if(temp.getText().equals("c") && equationTextField.getText().length() > 0){
-						equationTextField.setText(equationTextField.getText().substring(
-							0, equationTextField.getText().length() - 1));
+					if(temp.getText().equals("c") && expressionTextField.getText().length() > 0){
+						expressionTextField.setText(expressionTextField.getText().substring(
+							0, expressionTextField.getText().length() - 1));
 					}
 					else if(!operatorAlreadyPressed && !temp.getText().equals("=")){
-						String newEquationText = equationTextField.getText()
+						String newexpressionText = expressionTextField.getText()
 							+ temp.getText();
-						equationTextField.setText(newEquationText);
+						expressionTextField.setText(newexpressionText);
 						operatorAlreadyPressed = true;
 					}
 					else if(secondOperand || temp.getText().equals("=")){
@@ -152,16 +152,16 @@ public class Calculator extends Application{
 						try{
 							ScriptEngineManager mgr = new ScriptEngineManager();
 					    ScriptEngine engine = mgr.getEngineByName("JavaScript");
-							equationTextField.setText(String.valueOf(engine.eval(
-								equationTextField.getText())));
+							expressionTextField.setText(String.valueOf(engine.eval(
+								expressionTextField.getText())));
 							if(!temp.getText().equals("=") && !temp.getText().equals("c")){
-								equationTextField.setText(equationTextField.getText()
+								expressionTextField.setText(expressionTextField.getText()
 								 + temp.getText());
 								operatorAlreadyPressed = true;
 							}
 						}
 						catch(ScriptException exc){
-							equationTextField.setText("Invalid operation.");
+							expressionTextField.setText("Invalid operation.");
 							scriptExceptionOccurred = true;
 							secondOperand = false;
 							operatorAlreadyPressed = false;
@@ -171,7 +171,7 @@ public class Calculator extends Application{
 			});
 		}
 
-		root.getChildren().addAll(equationTextField, numberGrid, operatorGrid);
+		root.getChildren().addAll(expressionTextField, numberGrid, operatorGrid);
 
 		primaryStage.setScene(scene);
 		primaryStage.sizeToScene();
