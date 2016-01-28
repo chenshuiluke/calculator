@@ -15,11 +15,14 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.ColumnConstraints;
 
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
+import javafx.stage.Stage;
+
 import javafx.geometry.HPos;
+
+import java.util.ArrayList;
 
 public class Calculator extends Application{
 	public static void main(String[] args){
@@ -50,6 +53,7 @@ public class Calculator extends Application{
 		operatorGrid.setGridLinesVisible(true);
 */
 
+		ArrayList<Button> numberButtons = new ArrayList<>();
 
 		int buttonCounter = 0;
 		int buttonWidth = 500;
@@ -65,9 +69,10 @@ public class Calculator extends Application{
 					column.setHalignment(HPos.CENTER);
 					numberGrid.getColumnConstraints().add(column);
 				}
-				Button button = new Button(new String().valueOf(buttonCounter));
+				Button button = new Button(String.valueOf(buttonCounter));
 				button.setPrefWidth(buttonWidth);
 				button.setPrefHeight(buttonHeight);
+				numberButtons.add(button);
 				numberGrid.add(button, x, y);
 			}
 		}
@@ -90,6 +95,14 @@ public class Calculator extends Application{
 				}
 		}
 
+		for(int counter = 0; counter < numberButtons.size(); counter++){
+			numberButtons.get(counter).setOnAction(new EventHandler<ActionEvent>(){
+				public void handle(ActionEvent e){
+					Button temp = (Button)e.getSource();
+					System.out.println(temp.getText());
+				}
+			});
+		}
 		root.getChildren().addAll(equationTextField, numberGrid, operatorGrid);
 
 		primaryStage.setScene(scene);
