@@ -147,6 +147,8 @@ public class Calculator extends Application{
 						operatorAlreadyPressed = true;
 					}
 					else if(secondOperand || temp.getText().equals("=")){
+						operatorAlreadyPressed = false;
+						secondOperand = false;
 						try{
 							ScriptEngineManager mgr = new ScriptEngineManager();
 					    ScriptEngine engine = mgr.getEngineByName("JavaScript");
@@ -155,9 +157,8 @@ public class Calculator extends Application{
 							if(!temp.getText().equals("=") && !temp.getText().equals("c")){
 								equationTextField.setText(equationTextField.getText()
 								 + temp.getText());
+								operatorAlreadyPressed = true;
 							}
-							operatorAlreadyPressed = false;
-							secondOperand = false;
 						}
 						catch(ScriptException exc){
 							equationTextField.setText("Invalid operation.");
