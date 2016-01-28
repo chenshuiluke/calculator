@@ -24,11 +24,18 @@ import javafx.geometry.HPos;
 
 import java.util.ArrayList;
 
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
+
 public class Calculator extends Application{
+	private boolean operatorAlreadyPressed = false;
+	private boolean secondOperand = false;
+	private boolean scriptExceptionOccurred = false;
 	public static void main(String[] args){
 			Application.launch(args);
 	}
-	public void start(Stage primaryStage){
+	public void start(Stage primaryStage) throws ScriptException{
 		int windowWidth = 190;
 		int windowHeight = 250;
 		primaryStage.setTitle("Calculator");
@@ -54,6 +61,7 @@ public class Calculator extends Application{
 */
 
 		ArrayList<Button> numberButtons = new ArrayList<>();
+		ArrayList<Button> operatorButtons = new ArrayList<>();
 
 		int buttonCounter = 0;
 		int buttonWidth = 500;
@@ -76,7 +84,7 @@ public class Calculator extends Application{
 				numberGrid.add(button, x, y);
 			}
 		}
-		String[][] operatorTextArr = {{"=", "+"}, {"-", "*"}, {"/", "c"}};
+		String[][] operatorTextArr = {{"+", "-"}, {"*", "/"}, {"=", "c"}};
 		for(int y = 0; y < operatorTextArr.length; y++){
 			RowConstraints row = new RowConstraints();
 			row.setPercentHeight(20);
@@ -91,24 +99,77 @@ public class Calculator extends Application{
 					Button button = new Button(operatorTextArr[y][x]);
 					button.setPrefWidth(buttonWidth);
 					button.setPrefHeight(buttonHeight);
+					operatorButtons.add(button);
 					operatorGrid.add(button, y, x);
 				}
 		}
 
+		//Makes clicking the number buttons add to the equationTextField
 		for(int counter = 0; counter < numberButtons.size(); counter++){
 			numberButtons.get(counter).setOnAction(new EventHandler<ActionEvent>(){
 				public void handle(ActionEvent e){
 					Button temp = (Button)e.getSource();
+					if(scriptExceptionOccurred){
+						equationTextField.setText("");
+						scriptExceptionOccurred = false;
+					}
 					String newEquationText = equationTextField.getText() + temp.getText();
+					/*
 					Long test = Long.valueOf(newEquationText);
 					if(test < Integer.MAX_VALUE){
-						equationTextField.setText(equationTextField.getText()
-							+ temp.getText());
-						System.out.println(temp.getText());
+					}
+					*/
+					equationTextField.setText(newEquationText);
+					System.out.println(newEquationText);
+					if(operatorAlreadyPressed && !secondOperand){
+						secondOperand = true;
 					}
 				}
 			});
 		}
+
+		for(int counter = 0; counter < operatorButtons.size(); counter++){
+			operatorButtons.get(counter).setOnAction(new EventHandler<ActionEvent>(){
+				public void handle(ActionEvent e){
+					Button temp = (Button)e.getSource();
+					if(scriptExceptionOccurred){
+						equationTextField.setText("");
+						scriptExceptionOccurred = false;
+					}
+					if(temp.getText().equals("c") && equationTextField.getText().length() > 0){
+						equationTextField.setText(equationTextField.getText().substring(
+							0, equationTextField.getText().length() - 1));
+					}
+					else if(!operatorAlreadyPressed && !temp.getText().equals("=")){
+						String newEquationText = equationTextField.getText()
+							+ temp.getText();
+						equationTextField.setText(newEquationText);
+						operatorAlreadyPressed = true;
+					}
+					else if(secondOperand || temp.getText().equals("=")){
+						try{
+							ScriptEngineManager mgr = new ScriptEngineManager();
+					    ScriptEngine engine = mgr.getEngineByName("JavaScript");
+							equationTextField.setText(String.valueOf(engine.eval(
+								equationTextField.getText())));
+							if(!temp.getText().equals("=") && !temp.getText().equals("c")){
+								equationTextField.setText(equationTextField.getText()
+								 + temp.getText());
+							}
+							operatorAlreadyPressed = false;
+							secondOperand = false;
+						}
+						catch(ScriptException exc){
+							equationTextField.setText("Invalid operation.");
+							scriptExceptionOccurred = true;
+							secondOperand = false;
+							operatorAlreadyPressed = false;
+						}
+					}
+				}
+			});
+		}
+
 		root.getChildren().addAll(equationTextField, numberGrid, operatorGrid);
 
 		primaryStage.setScene(scene);
