@@ -137,10 +137,15 @@ public class Calculator extends Application{
 						scriptExceptionOccurred = false;
 					}
 					if(temp.getText().equals("c") && expressionTextField.getText().length() > 0){
+						String text = expressionTextField.getText();
+						if(text.charAt(text.length() - 1) == '+' || text.charAt(text.length() - 1) == '-'
+							|| text.charAt(text.length() - 1) == '*' || text.charAt(text.length() - 1) == '/'){
+							operatorAlreadyPressed = false;
+						}
 						expressionTextField.setText(expressionTextField.getText().substring(
 							0, expressionTextField.getText().length() - 1));
 					}
-					else if(!operatorAlreadyPressed && !temp.getText().equals("=")){
+					else if(!operatorAlreadyPressed && expressionTextField.getText().length() > 0 && !temp.getText().equals("=")){
 						String newexpressionText = expressionTextField.getText()
 							+ temp.getText();
 						expressionTextField.setText(newexpressionText);
