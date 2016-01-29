@@ -5,7 +5,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.Group;
 
-import javafx.scene.control.TextField;
+import javafx.scene.control.Label;
 import javafx.scene.control.Button;
 
 import javafx.scene.layout.BorderPane;
@@ -45,8 +45,8 @@ public class Calculator extends Application{
 		VBox root = new VBox();
 		Scene scene = new Scene(root, windowWidth, windowHeight, Color.WHITE);
 
-		TextField expressionTextField = new TextField();
-		expressionTextField.setEditable(false);
+		Label expressionLabel = new Label();
+//		expressionLabel.setEditable(false);
 
 		GridPane numberGrid = new GridPane();
 		numberGrid.setHgap(5);
@@ -104,22 +104,22 @@ public class Calculator extends Application{
 				}
 		}
 
-		//Makes clicking the number buttons add to the expressionTextField
+		//Makes clicking the number buttons add to the expressionLabel
 		for(int counter = 0; counter < numberButtons.size(); counter++){
 			numberButtons.get(counter).setOnAction(new EventHandler<ActionEvent>(){
 				public void handle(ActionEvent e){
 					Button temp = (Button)e.getSource();
 					if(scriptExceptionOccurred){
-						expressionTextField.setText("");
+						expressionLabel.setText("");
 						scriptExceptionOccurred = false;
 					}
-					String newexpressionText = expressionTextField.getText() + temp.getText();
+					String newexpressionText = expressionLabel.getText() + temp.getText();
 					/*
 					Long test = Long.valueOf(newexpressionText);
 					if(test < Integer.MAX_VALUE){
 					}
 					*/
-					expressionTextField.setText(newexpressionText);
+					expressionLabel.setText(newexpressionText);
 					System.out.println(newexpressionText);
 					if(operatorAlreadyPressed && !secondOperand){
 						secondOperand = true;
@@ -133,22 +133,22 @@ public class Calculator extends Application{
 				public void handle(ActionEvent e){
 					Button temp = (Button)e.getSource();
 					if(scriptExceptionOccurred){
-						expressionTextField.setText("");
+						expressionLabel.setText("");
 						scriptExceptionOccurred = false;
 					}
-					if(temp.getText().equals("c") && expressionTextField.getText().length() > 0){
-						String text = expressionTextField.getText();
+					if(temp.getText().equals("c") && expressionLabel.getText().length() > 0){
+						String text = expressionLabel.getText();
 						if(text.charAt(text.length() - 1) == '+' || text.charAt(text.length() - 1) == '-'
 							|| text.charAt(text.length() - 1) == '*' || text.charAt(text.length() - 1) == '/'){
 							operatorAlreadyPressed = false;
 						}
-						expressionTextField.setText(expressionTextField.getText().substring(
-							0, expressionTextField.getText().length() - 1));
+						expressionLabel.setText(expressionLabel.getText().substring(
+							0, expressionLabel.getText().length() - 1));
 					}
-					else if(!operatorAlreadyPressed && expressionTextField.getText().length() > 0 && !temp.getText().equals("=")){
-						String newexpressionText = expressionTextField.getText()
+					else if(!operatorAlreadyPressed && expressionLabel.getText().length() > 0 && !temp.getText().equals("=")){
+						String newexpressionText = expressionLabel.getText()
 							+ temp.getText();
-						expressionTextField.setText(newexpressionText);
+						expressionLabel.setText(newexpressionText);
 						operatorAlreadyPressed = true;
 					}
 					else if(secondOperand || temp.getText().equals("=")){
@@ -157,16 +157,16 @@ public class Calculator extends Application{
 						try{
 							ScriptEngineManager mgr = new ScriptEngineManager();
 					    ScriptEngine engine = mgr.getEngineByName("JavaScript");
-							expressionTextField.setText(String.valueOf(engine.eval(
-								expressionTextField.getText())));
+							expressionLabel.setText(String.valueOf(engine.eval(
+								expressionLabel.getText())));
 							if(!temp.getText().equals("=") && !temp.getText().equals("c")){
-								expressionTextField.setText(expressionTextField.getText()
+								expressionLabel.setText(expressionLabel.getText()
 								 + temp.getText());
 								operatorAlreadyPressed = true;
 							}
 						}
 						catch(ScriptException exc){
-							expressionTextField.setText("Invalid operation.");
+							expressionLabel.setText("Invalid operation.");
 							scriptExceptionOccurred = true;
 							secondOperand = false;
 							operatorAlreadyPressed = false;
@@ -176,7 +176,7 @@ public class Calculator extends Application{
 			});
 		}
 
-		root.getChildren().addAll(expressionTextField, numberGrid, operatorGrid);
+		root.getChildren().addAll(expressionLabel, numberGrid, operatorGrid);
 
 		primaryStage.setScene(scene);
 		primaryStage.sizeToScene();
