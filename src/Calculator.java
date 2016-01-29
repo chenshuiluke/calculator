@@ -159,7 +159,7 @@ public class Calculator extends Application{
 							operatorAlreadyPressed = false;
 						}
 						expressionLabel.setText(expressionLabel.getText().substring(
-							0, charToDelete));
+							0, expressionLabel.getText().length()-1));
 					}
 					/*
 					Only 1 operator is allowed in an expression. If there is none, and the operator pressed != "="
