@@ -108,20 +108,26 @@ public class Calculator extends Application{
 		for(int counter = 0; counter < numberButtons.size(); counter++){
 			numberButtons.get(counter).setOnAction(new EventHandler<ActionEvent>(){
 				public void handle(ActionEvent e){
+					//Gets info about the clicked button
 					Button temp = (Button)e.getSource();
 					if(scriptExceptionOccurred){
+						/*
+						Clears the label once the user tries to enter a new expression
+						after an exception occurred. Can't be done in catch 'cause, well,
+						we need to make sure the user sees the message
+						*/
 						expressionLabel.setText("");
 						scriptExceptionOccurred = false;
 					}
 					String newexpressionText = expressionLabel.getText() + temp.getText();
-					/*
-					Long test = Long.valueOf(newexpressionText);
-					if(test < Integer.MAX_VALUE){
-					}
-					*/
 					expressionLabel.setText(newexpressionText);
 					System.out.println(newexpressionText);
+					//Adds the number on the button to the expression
 					if(operatorAlreadyPressed && !secondOperand){
+						/*
+						If any non-digit button is pressed, this tells the program
+						to evaluate the expression
+						*/
 						secondOperand = true;
 					}
 				}
@@ -131,34 +137,54 @@ public class Calculator extends Application{
 		for(int counter = 0; counter < operatorButtons.size(); counter++){
 			operatorButtons.get(counter).setOnAction(new EventHandler<ActionEvent>(){
 				public void handle(ActionEvent e){
+					String text = expressionLabel.getText();
+					/*Same as above section*/
 					Button temp = (Button)e.getSource();
 					if(scriptExceptionOccurred){
 						expressionLabel.setText("");
 						scriptExceptionOccurred = false;
 					}
+					/*
+					If the clear button is pressed, and the expression has content
+					delete a character
+					*/
 					if(temp.getText().equals("c") && expressionLabel.getText().length() > 0){
-						String text = expressionLabel.getText();
-						if(text.charAt(text.length() - 1) == '+' || text.charAt(text.length() - 1) == '-'
-							|| text.charAt(text.length() - 1) == '*' || text.charAt(text.length() - 1) == '/'){
+						char charToDelete = text.charAt(text.length() - 1);
+						if(charToDelete == '+' || charToDelete == '-'
+							|| charToDelete == '*' || charToDelete == '/'){
+							/*
+							Allows an operator to be pressed again if an
+							operator character is deleted
+							*/
 							operatorAlreadyPressed = false;
 						}
 						expressionLabel.setText(expressionLabel.getText().substring(
-							0, expressionLabel.getText().length() - 1));
+							0, charToDelete));
 					}
-					else if(!operatorAlreadyPressed && expressionLabel.getText().length() > 0 && !temp.getText().equals("=")){
+					/*
+					Only 1 operator is allowed in an expression. If there is none, and the operator pressed != "="
+					add it to expression
+					*/
+					else if(!operatorAlreadyPressed && text.length() > 0 && !temp.getText().equals("=")){
 						String newexpressionText = expressionLabel.getText()
 							+ temp.getText();
 						expressionLabel.setText(newexpressionText);
 						operatorAlreadyPressed = true;
 					}
+					//If there is another operator already, or the operator pressed == "=", evaluate expression
 					else if(secondOperand || temp.getText().equals("=")){
 						operatorAlreadyPressed = false;
 						secondOperand = false;
 						try{
 							ScriptEngineManager mgr = new ScriptEngineManager();
-					    ScriptEngine engine = mgr.getEngineByName("JavaScript");
+					    		ScriptEngine engine = mgr.getEngineByName("JavaScript");
 							expressionLabel.setText(String.valueOf(engine.eval(
 								expressionLabel.getText())));
+							/*
+							If the expression is evaluated because an operator was already there,
+							and the new operator != "=" and != "c", add the new operator to the 
+							new expression
+							*/
 							if(!temp.getText().equals("=") && !temp.getText().equals("c")){
 								expressionLabel.setText(expressionLabel.getText()
 								 + temp.getText());
@@ -166,6 +192,7 @@ public class Calculator extends Application{
 							}
 						}
 						catch(ScriptException exc){
+							//Basically let the user know and reset important booleans.
 							expressionLabel.setText("Invalid operation.");
 							scriptExceptionOccurred = true;
 							secondOperand = false;
